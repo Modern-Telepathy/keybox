@@ -8,3 +8,4 @@ extension/out/
 site/.stage/
 site/downloads/
 kb-secret.md
+.vercel

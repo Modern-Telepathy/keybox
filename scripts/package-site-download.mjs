@@ -9,7 +9,7 @@
  */
 
 import { createHash } from "node:crypto";
-import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { deflateRawSync } from "node:zlib";
@@ -96,21 +96,19 @@ rmSync(join(root, "site", ".stage"), { recursive: true, force: true });
 process.stdout.write(`${zipName} ${zip.length} bytes\n${sha256}\n`);
 
 function copyRel(from, to = from) {
-  copyEntry(join(root, from), join(stage, to));
+  const src = join(root, from);
+  // Vercel does not upload .gitignore into the build sandbox.
+  if (!existsSync(src)) return;
+  copyEntry(src, join(stage, to));
 }
 
 function copyEntry(src, dest) {
-  let entries;
-  try {
-    entries = readdirSync(src, { withFileTypes: true });
-  } catch (error) {
-    if (error && error.code === "ENOTDIR") {
-      mkdirSync(dirname(dest), { recursive: true });
-      writeFileSync(dest, readFileSync(src));
-      return;
-    }
-    throw error;
+  if (statSync(src).isFile()) {
+    mkdirSync(dirname(dest), { recursive: true });
+    writeFileSync(dest, readFileSync(src));
+    return;
   }
+  const entries = readdirSync(src, { withFileTypes: true });
   mkdirSync(dest, { recursive: true });
   for (const entry of entries) {
     if (entry.name === ".DS_Store" || entry.name === "out") continue;
