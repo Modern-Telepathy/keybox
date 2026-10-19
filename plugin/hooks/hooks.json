@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeSubmitPrompt": [
+      {
+        "command": "~/.keybox/bin/keybox hook before-submit --format cursor",
+        "failClosed": true
+      }
+    ],
+    "sessionStart": [
+      {
+        "command": "~/.keybox/bin/keybox hook session-start --format cursor"
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "~/.keybox/bin/keybox hook redact-tool --format cursor",
+        "matcher": "MCP:"
+      }
+    ]
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "keybox": {
+      "command": "keybox",
+      "args": ["mcp"]
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "name": "keybox",
+  "displayName": "Keybox",
+  "description": "Seal a secret so an agent can spend it. The model never reads the value.",
+  "version": "0.1.0",
+  "publisher": "keybox",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "keybox.sealSelection",
+        "title": "Seal Key",
+        "category": "Keybox"
+      },
+      {
+        "command": "keybox.sealClipboard",
+        "title": "Seal Clipboard",
+        "category": "Keybox"
+      },
+      {
+        "command": "keybox.toggleOpenSpend",
+        "title": "Toggle Open Spend",
+        "category": "Keybox"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "keybox.sealSelection",
+          "when": "editorHasSelection",
+          "group": "9_cutcopypaste@9"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "keybox.sealSelection",
+        "key": "ctrl+alt+l",
+        "mac": "cmd+alt+l",
+        "when": "editorHasSelection"
+      }
+    ],
+    "configuration": {
+      "properties": {
+        "keybox.cliPath": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path to the Keybox CLI (dist/cli.js or the ~/.keybox/bin/keybox shim)."
+        },
+        "keybox.openSpend": {
+          "type": "boolean",
+          "default": false,
+          "scope": "application",
+          "description": "Allow the agent to spend sealed keys at any HTTPS URL. The model still cannot read the values. A confused agent could send a key to a host you did not intend."
+        }
+      }
+    }
+  }
+}

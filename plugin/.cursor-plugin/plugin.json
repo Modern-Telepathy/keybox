@@ -1,0 +1,10 @@
+{
+  "name": "keybox",
+  "version": "0.1.0",
+  "description": "Seal secrets in the composer. Agents spend them; they never read them.",
+  "author": {
+    "name": "Keybox"
+  },
+  "keywords": ["secrets", "security", "mcp", "vault"],
+  "license": "MIT"
+}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Keybox">
+  <rect width="512" height="512" rx="93" fill="#000" stroke="#fff" stroke-width="10"/>
+  <circle cx="256" cy="252" r="140" fill="#fff"/>
+  <circle cx="256" cy="214" r="36" fill="#000"/>
+  <path fill="#000" d="M236 238h40l12 92h-64z"/>
+</svg>

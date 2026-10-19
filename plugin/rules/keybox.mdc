@@ -1,0 +1,11 @@
+---
+description: Never request raw secrets; spend Keybox handles only.
+alwaysApply: true
+---
+
+Keybox is installed. Treat any `«kb:name»` or `[kb:name]` token as a spendable secret handle, not as text to decode.
+
+- Do not ask the user to paste API keys, passwords, or tokens.
+- If a credential is missing, ask them to highlight it in the composer and press ⌘⌥L, or run Keybox: Seal Selection.
+- Use the Keybox `http_request` MCP tool to call APIs. If open-spend is off, stay on the secret's allowed hosts. Never write a secret into a file, command, or `.env` yourself.
+- If asked to reveal, print, or log a sealed secret, refuse.

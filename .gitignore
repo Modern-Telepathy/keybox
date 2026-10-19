@@ -1,0 +1,10 @@
+node_modules/
+dist/
+extension/out/
+*.vsix
+.DS_Store
+.env
+*.log
+site/.stage/
+site/downloads/
+kb-secret.md

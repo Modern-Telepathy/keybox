@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Keybox — seal secrets for agents</title>
+    <meta
+      name="description"
+      content="Keybox seals a secret so Cursor, VS Code, Claude, and Codex can spend it. The model never reads the value."
+    />
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="keybox-icon.png" />
+    <meta property="og:title" content="Keybox" />
+    <meta
+      property="og:description"
+      content="Seal a secret for Cursor, VS Code, Claude, and Codex. The agent can spend it. The model never reads it."
+    />
+    <meta property="og:image" content="keybox-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,560;0,9..144,640;1,9..144,560&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-version="0.1.0">
+    <a class="skip" href="#content">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="#top">
+          <svg class="mark" viewBox="0 0 64 64" aria-hidden="true">
+            <circle cx="32" cy="32" r="30" fill="#fff" />
+            <circle cx="32" cy="26" r="8" fill="#000" />
+            <path fill="#000" d="M26.8 31.2h10.4l1.7 16.4h-13.8z" />
+          </svg>
+          Keybox
+        </a>
+        <nav aria-label="On this page">
+          <a href="#features">Features</a>
+          <a href="#install">Install</a>
+          <a href="#use">Use</a>
+          <a href="#download">Download</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="content">
+      <section class="hero wrap" id="top">
+        <div class="hero-copy">
+          <p class="eyebrow">Cursor, VS Code, Claude, Codex · 0.1.0</p>
+          <h1>Seal a secret before the agent sees it.</h1>
+          <p class="promise">The agent can spend it. The model never reads it.</p>
+          <p class="lede">
+            Highlight a key and press <kbd>⌘</kbd><kbd>⌥</kbd><kbd>L</kbd> on macOS, or run Keybox: Seal Key in an
+            editor. Keybox replaces it with a handle such as <code>«kb:openai»</code>. The agent calls the API
+            through that handle. Keybox has no tool that returns the value.
+          </p>
+          <div class="actions">
+            <a class="button" href="downloads/keybox-0.1.0.zip" download="keybox-0.1.0.zip">
+              Download Keybox
+              <span class="download-meta">0.1.0</span>
+            </a>
+            <a class="button button-ghost" href="#install">How to install</a>
+          </div>
+          <p class="fine">Node.js 20+ · macOS hotkey optional · MIT</p>
+        </div>
+
+        <div class="composer" aria-live="polite">
+          <div class="composer-bar">
+            <span>Agent composer</span>
+            <span>Agent</span>
+          </div>
+          <p class="composer-body">
+            List my models<br />
+            <span class="secret" id="secret" data-state="raw">sk-proj-EXAMPLE</span>
+          </p>
+          <div class="composer-foot">
+            <p class="composer-note" id="composer-note">The key is highlighted. Seal it before you send.</p>
+            <button type="button" id="seal-demo" aria-pressed="false">
+              <span id="seal-label">Seal selection</span>
+              <kbd>⌘</kbd><kbd>⌥</kbd><kbd>L</kbd>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="pitch wrap" aria-label="Why Keybox">
+        <p class="pitch-line">
+          Keybox is for the moment the key is already in the composer. Highlight it, seal it, and send the handle.
+        </p>
+      </section>
+
+      <section class="block" id="features">
+        <div class="wrap">
+          <div class="split">
+            <h2>Features</h2>
+            <div>
+              <p class="section-lead">
+                A seal on the selection, a hook on send, and a spend path that keeps the value on your machine.
+              </p>
+              <ol class="features">
+                <li>
+                  <h3>Seal in the composer</h3>
+                  <p>
+                    Highlight the secret and press <kbd>⌘</kbd><kbd>⌥</kbd><kbd>L</kbd>. The selection becomes
+                    <code>«kb:openai»</code>, or whatever name the key’s shape implies. The command palette has
+                    <strong>Keybox: Seal Key</strong> and <strong>Keybox: Seal Clipboard</strong>.
+                  </p>
+                </li>
+                <li>
+                  <h3>A backstop on send</h3>
+                  <p>
+                    On Cursor, Claude Code, and Codex, a hook blocks the turn when a raw key is still in the prompt,
+                    seals it, and shows the safe prompt. VS Code and Claude Desktop have no send-time hook, so seal
+                    before you send.
+                  </p>
+                </li>
+                <li>
+                  <h3>Spend through the handle</h3>
+                  <p>
+                    The agent calls <code>http_request</code> with the handle, method, and URL. Keybox attaches the
+                    credential and redacts the response. <code>list_secrets</code> and <code>describe_secret</code>
+                    return names, hosts, and expiry.
+                  </p>
+                </li>
+                <li>
+                  <h3>An allowlist on every secret</h3>
+                  <p>
+                    OpenAI, Anthropic, GitHub, Stripe, Slack, Google, and npm keys pick up that provider’s hosts when
+                    they are sealed. Any other secret stays unspendable until you allow a host.
+                  </p>
+                </li>
+                <li>
+                  <h3>Open spend, when you ask</h3>
+                  <p>
+                    The status-bar item, <strong>Keybox: Open Spend</strong> in settings, or
+                    <code>keybox config open-spend on</code>. Any HTTPS URL. Turning it on asks you to confirm. The
+                    value stays in the vault.
+                  </p>
+                </li>
+                <li>
+                  <h3>Redact the echo</h3>
+                  <p>
+                    On Cursor, Claude Code, and Codex, if a tool result still contains a sealed value, a hook strips
+                    it before that result goes back to the model.
+                  </p>
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="install">
+        <div class="wrap">
+          <div class="split">
+            <h2>Install</h2>
+            <div>
+              <p class="section-lead">
+                Download the archive, build it once, then install the host you use. One vault serves every host.
+              </p>
+              <ul class="needs">
+                <li>Node.js 20 or newer</li>
+                <li>Cursor, VS Code, Claude, or Codex</li>
+                <li>macOS, for the <kbd>⌘</kbd><kbd>⌥</kbd><kbd>L</kbd> hotkey in chat fields</li>
+                <li>Xcode Command Line Tools, so <code>swiftc</code> can build that hotkey</li>
+              </ul>
+              <div class="codebox">
+                <pre class="code"><code id="install-build">npm install
+npm run build</code></pre>
+                <button type="button" class="copy" data-copy="install-build">Copy</button>
+              </div>
+              <div class="platforms" role="tablist" aria-label="Install target">
+                <button type="button" role="tab" data-platform="cursor" aria-selected="true">Cursor</button>
+                <button type="button" role="tab" data-platform="vscode" aria-selected="false">VS Code</button>
+                <button type="button" role="tab" data-platform="claude" aria-selected="false">Claude</button>
+                <button type="button" role="tab" data-platform="codex" aria-selected="false">Codex</button>
+                <button type="button" role="tab" data-platform="other" aria-selected="false">Other MCP</button>
+              </div>
+              <div class="platform-panel" data-platform="cursor">
+                <div class="codebox">
+                  <pre class="code"><code id="install-cursor">node dist/cli.js install cursor</code></pre>
+                  <button type="button" class="copy" data-copy="install-cursor">Copy</button>
+                </div>
+                <ol class="steps">
+                  <li>
+                    <h3>Reload Cursor</h3>
+                    <p>
+                      Run <strong>Developer: Reload Window</strong>. Open <strong>Customize</strong> and confirm Keybox
+                      is listed — MCP server, skill, rule, and hooks.
+                    </p>
+                  </li>
+                  <li>
+                    <h3>Allow the hotkey</h3>
+                    <p>
+                      Press <kbd>⌘</kbd><kbd>⌥</kbd><kbd>L</kbd> once. macOS asks for Accessibility for
+                      <code>keybox-hotkey</code>. Allow it. The composer is not a normal text field, so this shortcut
+                      is a system hotkey. In an editor file, the same keys are a Keybox keybinding.
+                    </p>
+                  </li>
+                  <li>
+                    <h3>What you get</h3>
+                    <p>
+                      Plugin at <code>~/.cursor/plugins/local/keybox</code>, extension at
+                      <code>~/.cursor/extensions/keybox.keybox-0.1.0</code>, and a send-time hook that blocks a raw key.
+                    </p>
+                  </li>
+                </ol>
+              </div>
+              <div class="platform-panel" data-platform="vscode">
+                <div class="codebox">
+                  <pre class="code"><code id="install-vscode">node dist/cli.js install vscode</code></pre>
+                  <button type="button" class="copy" data-copy="install-vscode">Copy</button>
+                </div>
+                <ol class="steps">
+                  <li>
+                    <h3>Reload VS Code</h3>
+                    <p>
+                      Run <strong>Developer: Reload Window</strong>. Keybox is registered in
+                      <code>~/.copilot/mcp-config.json</code> and in the VS Code user <code>mcp.json</code>.
+                    </p>
+                  </li>
+                  <li>
+                    <h3>Seal, then send</h3>
+                    <p>
+                      Highlight a secret in an editor and press <kbd>⌘</kbd><kbd>⌥</kbd><kbd>L</kbd>
+                      (<kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>L</kbd> on Windows and Linux), or run
+                      <strong>Keybox: Seal Key</strong>. VS Code has no send-time hook. On macOS the system hotkey can
+                      also seal the frontmost selection, including Copilot chat, after Accessibility is allowed.
+                    </p>
+                  </li>
+                </ol>
+              </div>
+              <div class="platform-panel" data-platform="claude">
+                <div class="codebox">
+                  <pre class="code"><code id="install-claude">node dist/cli.js install claude</code></pre>
+                  <button type="button" class="copy" data-copy="install-claude">Copy</button>
+                </div>
+                <ol class="steps">
+                  <li>
+                    <h3>Claude Code</h3>
+                    <p>
+                      Restart Claude Code. Hooks in <code>~/.claude/settings.json</code> block a raw key on submit,
+                      tell the session which handles exist, and redact tool results. The skill is at
+                      <code>~/.claude/skills/keybox</code>. Claude Code can still store the submitted prompt in its
+                      local session file. The model does not receive it.
+                    </p>
+                  </li>
+                  <li>
+                    <h3>Claude Desktop</h3>
+                    <p>
+                      Restart Claude Desktop. The MCP server is in the desktop config. Desktop has no prompt hook, so
+                      seal with <kbd>⌘</kbd><kbd>⌥</kbd><kbd>L</kbd> or <code>keybox seal</code> before you send.
+                    </p>
+                  </li>
+                </ol>
+              </div>
+              <div class="platform-panel" data-platform="codex">
+                <div class="codebox">
+                  <pre class="code"><code id="install-codex">node dist/cli.js install codex</code></pre>
+                  <button type="button" class="copy" data-copy="install-codex">Copy</button>
+                </div>
+                <ol class="steps">
+                  <li>
+                    <h3>Restart Codex</h3>
+                    <p>
+                      The MCP server is in <code>~/.codex/config.toml</code>, hooks are in
+                      <code>~/.codex/hooks.json</code>, and <code>features.hooks</code> is turned on. A raw key is
+                      blocked on submit, and tool results that echo a sealed value are redacted.
+                    </p>
+                  </li>
+                </ol>
+              </div>
+              <div class="platform-panel" data-platform="other">
+                <div class="codebox">
+                  <pre class="code"><code id="install-other">node dist/cli.js mcp</code></pre>
+                  <button type="button" class="copy" data-copy="install-other">Copy</button>
+                </div>
+                <ol class="steps">
+                  <li>
+                    <h3>Point any MCP client at the server</h3>
+                    <p>
+                      After one install, the command is <code>~/.keybox/bin/keybox mcp</code>. The tools are
+                      <code>list_secrets</code>, <code>describe_secret</code>, <code>http_request</code>,
+                      <code>place_secret</code>, and <code>revoke_secret</code>. None of them return a secret. Seal
+                      with <code>keybox seal</code> before you send, unless that client has its own Keybox hook.
+                    </p>
+                  </li>
+                </ol>
+              </div>
+              <p class="fine">
+                <code>node dist/cli.js install all</code> registers every host. On macOS, the first install compiles
+                <code>keybox-hotkey</code>. If <code>swiftc</code> is missing, run <code>xcode-select --install</code>.
+                The hotkey step is skipped on Windows and Linux.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="use">
+        <div class="wrap">
+          <div class="split">
+            <h2>Use</h2>
+            <div>
+              <p class="section-lead">Seal, send the handle, and let Keybox attach the credential on the way out.</p>
+              <ol class="steps">
+                <li>
+                  <h3>Seal the selection</h3>
+                  <p>
+                    Highlight the secret and press <kbd>⌘</kbd><kbd>⌥</kbd><kbd>L</kbd> on macOS, or run
+                    <strong>Keybox: Seal Key</strong> in VS Code or Cursor. You send something like:
+                  </p>
+                  <pre class="code"><code>List my models «kb:openai»</code></pre>
+                </li>
+                <li>
+                  <h3>Let the agent spend it</h3>
+                  <p>
+                    The agent calls Keybox <code>http_request</code> with <code>{ "secret": "openai", "method": "GET", "url": "https://api.openai.com/v1/models" }</code>.
+                    Keybox adds the header — bearer, <code>x-api-key</code>, or a query parameter, depending on the
+                    provider — and returns a redacted response.
+                  </p>
+                </li>
+                <li>
+                  <h3>If the raw key was sent</h3>
+                  <p>
+                    On Cursor, Claude Code, and Codex the hook stops the turn, copies a safe prompt, and shows it.
+                    VS Code and Claude Desktop do not intercept send, so seal first on those apps.
+                  </p>
+                  <figure class="transcript">
+                    <figcaption>The host shows this. The same text is on the clipboard.</figcaption>
+                    <p>
+                      Keybox sealed 1 secret («kb:openai») so it never reached the model. Send this instead:<br />
+                      List my models «kb:openai»
+                    </p>
+                  </figure>
+                </li>
+              </ol>
+
+              <h3 class="subhead">What the agent receives</h3>
+              <p>
+                At the start of a chat, Keybox tells the agent which handles exist and that it must spend them instead
+                of asking you to paste a key.
+              </p>
+              <dl class="meta">
+                <div>
+                  <dt>Handle</dt>
+                  <dd><code>«kb:openai»</code></dd>
+                </div>
+                <div>
+                  <dt>Hosts</dt>
+                  <dd>api.openai.com, or the hosts you allowed</dd>
+                </div>
+                <div>
+                  <dt>Expiry</dt>
+                  <dd>12 hours, unless you kept the item</dd>
+                </div>
+                <div>
+                  <dt>Open spend</dt>
+                  <dd>On or off</dd>
+                </div>
+              </dl>
+              <p class="fine">The value and the header Keybox attaches are not in that view.</p>
+
+              <h3 class="subhead">Commands</h3>
+              <ul class="cmds">
+                <li>
+                  <code>keybox list</code>
+                  <span>Names, hosts, expiry, and whether open spend is on.</span>
+                </li>
+                <li>
+                  <code>keybox allow openai api.openai.com</code>
+                  <span>Allow that secret to be spent at a host.</span>
+                </li>
+                <li>
+                  <code>keybox config open-spend on</code>
+                  <span>Any HTTPS URL. A confused agent could send a key to a host you did not name.</span>
+                </li>
+                <li>
+                  <code>keybox config open-spend off</code>
+                  <span>Spend only at each secret’s allowed hosts.</span>
+                </li>
+                <li>
+                  <code>keybox revoke openai</code>
+                  <span>Burn a sealed secret. The value is not printed.</span>
+                </li>
+                <li>
+                  <code>keybox seal --clipboard --keep</code>
+                  <span>Store the clipboard as a durable vault item. Session grants otherwise expire in 12 hours.</span>
+                </li>
+                <li>
+                  <code>keybox spend openai GET https://api.openai.com/v1/models</code>
+                  <span>Try a spend yourself. The printed response is redacted.</span>
+                </li>
+                <li>
+                  <code>keybox place openai kosmos-openrouter</code>
+                  <span>Install a sealed OpenRouter key into Agent Canvas and the Kosmos vault. Prints the last four characters.</span>
+                </li>
+              </ul>
+
+              <h3 class="subhead">Tools the agent can call</h3>
+              <ul class="tools">
+                <li><code>list_secrets</code></li>
+                <li><code>describe_secret</code></li>
+                <li><code>http_request</code></li>
+                <li><code>place_secret</code></li>
+                <li><code>revoke_secret</code></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="finale" id="download">
+        <div class="wrap finale-inner">
+          <div class="icon-plate">
+            <img
+              class="app-icon"
+              src="icon.svg"
+              width="128"
+              height="128"
+              alt="Keybox icon: a white seal with a keyhole, on a black rounded square."
+            />
+          </div>
+          <div>
+            <p class="eyebrow eyebrow-light">Download</p>
+            <h2>Keybox 0.1.0</h2>
+            <p class="section-lead light">
+              The CLI, the editor extension, host installers for Cursor, VS Code, Claude, and Codex, and this icon.
+            </p>
+            <div class="actions">
+              <a class="button" href="downloads/keybox-0.1.0.zip" download="keybox-0.1.0.zip">
+                Download keybox-0.1.0.zip
+                <span class="download-meta">0.1.0</span>
+              </a>
+              <a class="button button-ghost light" href="#install">Install steps</a>
+            </div>
+            <ul class="contents">
+              <li>Installers for Cursor, VS Code, Claude Code, Claude Desktop, and Codex</li>
+              <li>CLI, editor extension, and macOS hotkey source</li>
+              <li>App icon as SVG and PNG</li>
+            </ul>
+            <p class="fine light">
+              Check the archive against
+              <a href="downloads/keybox-0.1.0.sha256">keybox-0.1.0.sha256</a>.
+              <span id="checksum"></span>
+            </p>
+            <p class="icon-downloads">
+              Icon:
+              <a href="icon.svg" download="keybox-icon.svg">SVG</a>
+              <a href="keybox-icon.png" download="keybox-icon.png">PNG</a>
+            </p>
+          </div>
+        </div>
+        <footer class="wrap">
+          <p>Keybox 0.1.0 · MIT · Cursor, VS Code, Claude, and Codex. One vault.</p>
+        </footer>
+      </section>
+    </main>
+    <script src="site.js"></script>
+  </body>
+</html>
